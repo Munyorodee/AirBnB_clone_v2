@@ -2,7 +2,7 @@
 ##          MUNYORO MD
 ##			NYABINDE N
 
-##
+## Dagnachew Seresa & Munyoro Mufaro David
 ![ alt text for screen readers](image.png "Text to show on mouseover")
 # AirBnB Clone
 In this project we will implement AirBnB clone using console.
