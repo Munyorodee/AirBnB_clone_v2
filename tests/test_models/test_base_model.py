@@ -1,125 +1,78 @@
 #!/usr/bin/python3
-"""Unittest base_model
-Test cases for class BaseModel.
-"""
-
+"""test for BaseModel"""
 import unittest
-from datetime import datetime
-from uuid import uuid4
-from models.base_model import BaseModel
-from models.engine.file_storage import FileStorage
 import os
-import time
-from models import storage
+from models.base_model import BaseModel
+import pep8
+from os import environ as env
 
 
 class TestBaseModel(unittest.TestCase):
-    """Test case for class BaseModel."""
+    """this will test the base model class"""
 
-    def setUp(self):
-        """set up test methods."""
+    @classmethod
+    def setUpClass(cls):
+        """setup for the test"""
+        cls.base = BaseModel()
+        cls.base.name = "Kev"
+        cls.base.num = 20
+
+    @classmethod
+    def teardown(cls):
+        """at the end of the test this will tear it down"""
+        del cls.base
+
+    def tearDown(self):
+        """teardown"""
+        try:
+            os.remove("file.json")
+        except Exception:
+            pass
+
+    def test_pep8_BaseModel(self):
+        """Testing for pep8"""
+        style = pep8.StyleGuide(quiet=True)
+        p = style.check_files(['models/base_model.py'])
+        self.assertEqual(p.total_errors, 0, "fix pep8")
+
+    def test_checking_for_docstring_BaseModel(self):
+        """checking for docstrings"""
+        self.assertIsNotNone(BaseModel.__doc__)
+        self.assertIsNotNone(BaseModel.__init__.__doc__)
+        self.assertIsNotNone(BaseModel.__str__.__doc__)
+        self.assertIsNotNone(BaseModel.save.__doc__)
+        self.assertIsNotNone(BaseModel.to_dict.__doc__)
+
+    def test_method_BaseModel(self):
+        """chekcing if Basemodel have methods"""
+        self.assertTrue(hasattr(BaseModel, "__init__"))
+        self.assertTrue(hasattr(BaseModel, "save"))
+        self.assertTrue(hasattr(BaseModel, "to_dict"))
+
+    def test_init_BaseModel(self):
+        """test if the base is an type BaseModel"""
+        self.assertTrue(isinstance(self.base, BaseModel))
+
+    @unittest.skipIf(env.get('HBNB_TYPE_STORAGE') == 'db',
+                     "dbstorage does not support BaseModel objects")
+    def test_save_BaesModel(self):
+        """test if the save works"""
+        self.base.save()
+        self.assertNotEqual(self.base.created_at, self.base.updated_at)
+
+    @unittest.skipIf(env.get('HBNB_TYPE_STORAGE') != 'db',
+                     "dbstorage does not support BaseModel objects")
+    def test_save_BaseModeldb(self):
+        """empty test for requirements"""
         pass
 
-    def teardown(self):
-        """Tears down test methods."""
-        self.resetStorage()
-        pass
-
-    def resetStorage(self):
-        """Resets FileStorage data."""
-
-        FileStorage._FileStorage__objects = {}
-        if os.path.isfile(FileStorage._FileStorage__file_path):
-            os.remove(FileStorage._FileStorage__file_path)
-
-    def test_3_instance(self):
-        """Tests for instance of class BaseModel."""
-
-        b = BaseModel()
-        self.assertEqual(str(type(b)), "<class 'models.base_model.BaseModel'>")
-        self.assertIsInstance(b, BaseModel)
-        self.assertTrue(issubclass(type(b), BaseModel))
-
-    def test_3_init_no_args(self):
-        """Tests __init__ with no args."""
-
-        self.resetStorage()
-        with self.assertRaises(TypeError) as e:
-            BaseModel.__init__()
-        msg = "__init__() missing 1 required positional argument: 'self'"
-        self.assertEqual(str(e.exception), msg)
-
-    def test_3_attributes(self):
-        """Tests attributes value for instance of class BaseModel."""
-
-        attributes = storage.attributes()["BaseModel"]
-        o = BaseModel()
-        for k, v, in attributes.items():
-            self.assertTrue(hasattr(o, k))
-            self.assertEqual(type(getattr(o, k, None)), v)
-
-    def test_3_datetime_created_at(self):
-        """Tests if created_at is a datetime obj."""
-
-        b = BaseModel()
-        self.assertTrue(type(b.created_at) is datetime)
-
-    def test_3_datetime_updated_at(self):
-        """Tests if updated_at is a datetime obj."""
-
-        b = BaseModel()
-        self.assertTrue(type(b.updated_at) is datetime)
-
-    def test_3_unique_id(self):
-        """Checks if instances have unique ids."""
-
-        b1 = BaseModel()
-        b2 = BaseModel()
-        self.assertNotEqual(b1.id, b2.id)
-
-    def test_3_id(self):
-        """Checks for id"""
-
-        b = BaseModel()
-        self.assertTrue(hasattr(b, "id"))
-
-    def test_3_save(self):
-        """Tests the public instance method save() updates the updated_at."""
-
-        b = BaseModel()
-        b.save()
-        self.assertNotEqual(b.created_at, b.updated_at)
-
-    def test_3_str(self):
-        """Test for __str__ representation."""
-
-        b = BaseModel()
-        self.assertEqual(str(b), "[BaseModel] ({}) {}".format(b.id, b.__dict__))
-
-    def test_3_to_dict(self):
-        """Tests for __dict__ public instance."""
-
-        b = BaseModel()
-        d = datetime.now()
-        b.id = "12345"
-        b.created_at = b.updated_at = d
-        test_dict = {
-            "id": "12345",
-            "created_at": d.isoformat(),
-            "updated_at": d.isoformat(),
-            "__class__": "BaseModel"
-            }
-        self.assertDictEqual(test_dict, b.to_dict())
-
-    def test_3_to_dict_with_no_args(self):
-        """Tests to_dict with no args."""
-
-        self.resetStorage()
-        with self.assertRaises(TypeError) as e:
-            BaseModel.to_dict()
-        msg = "to_dict() missing 1 required positional argument: 'self'"
-        self.assertEqual(str(e.exception), msg)
+    def test_to_dict_BaseModel(self):
+        """test if dictionary works"""
+        base_dict = self.base.to_dict()
+        self.assertEqual(self.base.__class__.__name__, 'BaseModel')
+        self.assertIsInstance(base_dict['created_at'], str)
+        self.assertIsInstance(base_dict['updated_at'], str)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

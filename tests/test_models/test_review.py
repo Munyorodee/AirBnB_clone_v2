@@ -1,42 +1,73 @@
 #!/usr/bin/python3
-"""Module test_review.py
-Tests for class Review.
-"""
-
-from models.base_model import BaseModel
-from models.review import Review
+"""test for review"""
 import unittest
+import os
+from models.review import Review
+from models.base_model import BaseModel
+import pep8
 
 
 class TestReview(unittest.TestCase):
-    """Tests for class Reiew."""
+    """this will test the place class"""
 
-    def setUp(self):
-        pass
+    @classmethod
+    def setUpClass(cls):
+        """set up for test"""
+        cls.rev = Review()
+        cls.rev.place_id = "4321-dcba"
+        cls.rev.user_id = "123-bca"
+        cls.rev.text = "The srongest in the Galaxy"
 
-    def test_9_4_instatiation(self):
-        """Checks for instances."""
+    @classmethod
+    def teardown(cls):
+        """at the end of the test this will tear it down"""
+        del cls.rev
 
-        r = Review()
-        self.assertEqual(str(type(r)), "<class 'models.review.Review'>")
-        self.assertIsInstance(r, Review)
-        self.assertTrue(issubclass(Review, BaseModel))
+    def tearDown(self):
+        """teardown"""
+        try:
+            os.remove("file.json")
+        except Exception:
+            pass
 
-    def test_9_4_class_attr(self):
-        """Checks for class attributes."""
+    def test_pep8_Review(self):
+        """Tests pep8 style"""
+        style = pep8.StyleGuide(quiet=True)
+        p = style.check_files(['models/review.py'])
+        self.assertEqual(p.total_errors, 0, "fix pep8")
 
-        r = Review()
-        self.assertTrue(hasattr(Review, "place_id"))
-        self.assertTrue(hasattr(Review, "user_id"))
-        self.assertTrue(hasattr(Review, "text"))
+    def test_checking_for_docstring_Review(self):
+        """checking for docstrings"""
+        self.assertIsNotNone(Review.__doc__)
 
-    def test_9_4_attr(self):
-        """Checks for attributes type."""
+    def test_attributes_review(self):
+        """chekcing if review have attributes"""
+        self.assertTrue('id' in self.rev.__dict__)
+        self.assertTrue('created_at' in self.rev.__dict__)
+        self.assertTrue('updated_at' in self.rev.__dict__)
+        self.assertTrue('place_id' in self.rev.__dict__)
+        self.assertTrue('text' in self.rev.__dict__)
+        self.assertTrue('user_id' in self.rev.__dict__)
 
-        r = Review()
-        self.assertTrue(r.place_id == "")
-        self.assertTrue(r.user_id == "")
-        self.assertTrue(r.text == "")
+    def test_is_subclass_Review(self):
+        """test if review is subclass of BaseModel"""
+        self.assertTrue(issubclass(self.rev.__class__, BaseModel), True)
 
-if __name__ == '__main__':
+    def test_attribute_types_Review(self):
+        """test attribute type for Review"""
+        self.assertEqual(type(self.rev.text), str)
+        self.assertEqual(type(self.rev.place_id), str)
+        self.assertEqual(type(self.rev.user_id), str)
+
+    def test_save_Review(self):
+        """test if the save works"""
+        self.rev.save()
+        self.assertNotEqual(self.rev.created_at, self.rev.updated_at)
+
+    def test_to_dict_Review(self):
+        """test if dictionary works"""
+        self.assertEqual('to_dict' in dir(self.rev), True)
+
+
+if __name__ == "__main__":
     unittest.main()

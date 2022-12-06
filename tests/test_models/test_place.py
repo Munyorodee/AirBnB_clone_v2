@@ -1,58 +1,97 @@
 #!/usr/bin/python3
-"""Module test_place.py
-Tests for class Place.
-"""
-
-from models.base_model import BaseModel
-from models.place import Place
+"""test for place"""
 import unittest
+import os
+from models.place import Place
+from models.base_model import BaseModel
+import pep8
 
 
 class TestPlace(unittest.TestCase):
-    """Tests for class Place."""
+    """this will test the place class"""
 
-    def setUp(self):
-        pass
+    @classmethod
+    def setUpClass(cls):
+        """set up for test"""
+        cls.place = Place()
+        cls.place.city_id = "1234-abcd"
+        cls.place.user_id = "4321-dcba"
+        cls.place.name = "Death Star"
+        cls.place.description = "UNLIMITED POWER!!!!!"
+        cls.place.number_rooms = 1000000
+        cls.place.number_bathrooms = 1
+        cls.place.max_guest = 607360
+        cls.place.price_by_night = 10
+        cls.place.latitude = 160.0
+        cls.place.longitude = 120.0
+        cls.place.amenity_ids = ["1324-lksdjkl"]
 
-    def test_9_5_instatiation(self):
-        """Checks for instatiation."""
+    @classmethod
+    def teardown(cls):
+        """at the end of the test this will tear it down"""
+        del cls.place
 
-        p = Place()
-        self.assertEqual(str(type(p)), "<class 'models.place.Place'>")
-        self.assertIsInstance(p, Place)
-        self.assertTrue(issubclass(Place, BaseModel))
+    def tearDown(self):
+        """teardown"""
+        try:
+            os.remove("file.json")
+        except Exception:
+            pass
 
-    def test_9_5_class_attr(self):
-        """Checks for class attributes."""
+    def test_pep8_Place(self):
+        """Tests pep8 style"""
+        style = pep8.StyleGuide(quiet=True)
+        p = style.check_files(['models/place.py'])
+        self.assertEqual(p.total_errors, 0, "fix pep8")
 
-        p = Place()
-        self.assertTrue(hasattr(Place, "city_id"))
-        self.assertTrue(hasattr(Place, "user_id"))
-        self.assertTrue(hasattr(Place, "name"))
-        self.assertTrue(hasattr(Place, "description"))
-        self.assertTrue(hasattr(Place, "number_rooms"))
-        self.assertTrue(hasattr(Place, "number_bathrooms"))
-        self.assertTrue(hasattr(Place, "max_guest"))
-        self.assertTrue(hasattr(Place, "price_by_night"))
-        self.assertTrue(hasattr(Place, "latitude"))
-        self.assertTrue(hasattr(Place, "longitude"))
-        self.assertTrue(hasattr(Place, "amenity_ids"))
+    def test_checking_for_docstring_Place(self):
+        """checking for docstrings"""
+        self.assertIsNotNone(Place.__doc__)
 
-    def test_9_5_attr(self):
-        """Checks for attributes type."""
+    def test_attributes_Place(self):
+        """chekcing if amenity have attributes"""
+        self.assertTrue('id' in self.place.__dict__)
+        self.assertTrue('created_at' in self.place.__dict__)
+        self.assertTrue('updated_at' in self.place.__dict__)
+        self.assertTrue('city_id' in self.place.__dict__)
+        self.assertTrue('user_id' in self.place.__dict__)
+        self.assertTrue('name' in self.place.__dict__)
+        self.assertTrue('description' in self.place.__dict__)
+        self.assertTrue('number_rooms' in self.place.__dict__)
+        self.assertTrue('number_bathrooms' in self.place.__dict__)
+        self.assertTrue('max_guest' in self.place.__dict__)
+        self.assertTrue('price_by_night' in self.place.__dict__)
+        self.assertTrue('latitude' in self.place.__dict__)
+        self.assertTrue('longitude' in self.place.__dict__)
+        self.assertTrue('amenity_ids' in self.place.__dict__)
 
-        p = Place()
-        self.assertTrue(p.city_id == "")
-        self.assertTrue(p.user_id == "")
-        self.assertTrue(p.name == "")
-        self.assertTrue(p.description == "")
-        self.assertTrue(p.number_rooms == 0)
-        self.assertTrue(p.number_bathrooms == 0)
-        self.assertTrue(p.max_guest == 0)
-        self.assertTrue(p.price_by_night == 0)
-        self.assertTrue(p.latitude == 0.0)
-        self.assertTrue(p.longitude == 0.0)
-        self.assertTrue(p.amenity_ids == [])
+    def test_is_subclass_Place(self):
+        """test if Place is subclass of Basemodel"""
+        self.assertTrue(issubclass(self.place.__class__, BaseModel), True)
 
-if __name__ == '__main__':
+    def test_attribute_types_Place(self):
+        """test attribute type for Place"""
+        self.assertEqual(type(self.place.city_id), str)
+        self.assertEqual(type(self.place.user_id), str)
+        self.assertEqual(type(self.place.name), str)
+        self.assertEqual(type(self.place.description), str)
+        self.assertEqual(type(self.place.number_rooms), int)
+        self.assertEqual(type(self.place.number_bathrooms), int)
+        self.assertEqual(type(self.place.max_guest), int)
+        self.assertEqual(type(self.place.price_by_night), int)
+        self.assertEqual(type(self.place.latitude), float)
+        self.assertEqual(type(self.place.longitude), float)
+        self.assertEqual(type(self.place.amenity_ids), list)
+
+    def test_save_Place(self):
+        """test if the save works"""
+        self.place.save()
+        self.assertNotEqual(self.place.created_at, self.place.updated_at)
+
+    def test_to_dict_Place(self):
+        """test if dictionary works"""
+        self.assertEqual('to_dict' in dir(self.place), True)
+
+
+if __name__ == "__main__":
     unittest.main()
